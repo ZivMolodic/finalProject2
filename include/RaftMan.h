@@ -6,6 +6,7 @@
 #include "Resources.h"
 #include "PhysicsBehavior.h"
 #include "GameObject.h"
+#include "Animation.h"
 
 class Player;
 
@@ -35,5 +36,7 @@ private:
 	Player* m_team;
 	std::weak_ptr<Weapon> m_weapon;
 	std::unique_ptr<RaftBlock> m_raftBlock;
+	DirectionA m_dir = DirectionA::Stay;
+	Animation m_animation;
 };
 

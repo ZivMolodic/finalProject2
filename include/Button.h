@@ -17,6 +17,32 @@ protected:
 	RectangleShape m_picture;
 };
 
+class VolumeButton : public Button
+{
+public:
+	VolumeButton(Vector2f position)
+		:Button(position, Vector2f(60, 60), "volume"), m_playing(true) {}
+	~VolumeButton() = default;
+	void play(){
+		if (m_playing)
+		{
+			Resources::instance().stopBackGroundMusic();
+			m_playing = false;
+			m_picture.setTexture(&Resources::instance().getTexture("mute"));
+		}
+		else
+		{
+			Resources::instance().playBackGround();
+			m_playing = true;
+			m_picture.setTexture(&Resources::instance().getTexture("volume"));
+		}
+	}
+private:
+	bool m_playing;
+};
+
+
+
 class MainMenuButton : public Button
 {
 public:
@@ -29,6 +55,7 @@ public:
 		m_text.setOutlineThickness(4);
 		m_text.setOutlineColor(sf::Color::Black);
 	}
+	~MainMenuButton() = default;
 	void draw(RenderWindow* window, sf::Vector2f cursorLocation) override
 	{
 		Button::draw(window, cursorLocation);
@@ -48,6 +75,7 @@ public:
 		m_text.setString("PLAY");
 		m_text.setOrigin(Vector2f{ m_text.getGlobalBounds().width / 2.f, m_text.getGlobalBounds().height / 2.f + 10.f });
 	}
+	~PlayButton() = default;
 	void play(RenderWindow* window) override;
 };
 
@@ -61,6 +89,8 @@ public:
 		m_text.setString("HELP");
 		m_text.setOrigin(Vector2f{ m_text.getGlobalBounds().width / 2.f, m_text.getGlobalBounds().height / 2.f + 10.f });
 	}
+	~HelpButton() = default;
+
 	void play(RenderWindow* window) override;
 };
 
@@ -74,6 +104,7 @@ public:
 		m_text.setString("EXIT");
 		m_text.setOrigin(Vector2f{ m_text.getGlobalBounds().width / 2.f, m_text.getGlobalBounds().height / 2.f + 10.f });
 	}
+	~ExitButton() = default;
 	void play(RenderWindow* window) override { window->close(); };
 };
 
@@ -123,7 +154,7 @@ class MissileButton : public GameMenuButton
 {
 public:
 	MissileButton(Vector2f position)
-		:GameMenuButton(position, "misiile_button") {}
+		:GameMenuButton(position, "missile_button") {}
 	enum Menu choose() override { return MISSILE; }
 };
 

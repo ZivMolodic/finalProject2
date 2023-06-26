@@ -18,6 +18,7 @@ public:
 	{
 		Missile,
 		GuidedMissile,
+		RaftMan,
 		MAX
 	};
 	Resources(const Resources&) = delete;
@@ -25,16 +26,16 @@ public:
 	static Resources& instance();
 	sf::Texture &getTexture(const std::string& str);
 	sf::Font& getFont() { return m_font;  }
-	/*void playMusic(enum Sounds i, int vol = 100);
+//	void playMusic(enum Sounds i, int vol = 100);
 	void playBackGround();
 	void volumeBackGround(int vol);
-	void stopBackGroundMusic();*/
+	void stopBackGroundMusic();
 	const AnimationData& animationData(Objects object) { return m_animation[object]; }
 
 private:
 	Resources();
 	void loadGraphics();
-//	void loadSounds();
+	void loadSounds();
 	std::vector<AnimationData> m_animation;
 
 	std::map <std::string, sf::Texture> m_textures;
@@ -42,6 +43,6 @@ private:
 	sf::Texture m_texture;
 
 //	std::vector<sf::SoundBuffer> m_sounds;
-//	sf::Music m_backGround;
+	sf::Music m_backGround;
 //	sf::Sound m_sound;
 };

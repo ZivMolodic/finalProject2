@@ -13,7 +13,7 @@ const sf::Vector2f GAME_MENU_BUTTON_SIZE = { 90, 90 };
 const float GRAVITY = 0.8f;
 const float BOUNCE_FACTOR = 0.7f; // Adjust this value to control the bounce intensity
 const int NUMOFPOINTS = 1000;
-
+const int MAX_SIZE_RAFTS = 8;
 const sf::Vector2f RAFT_SIZE = { 40, 10 };
 
 enum Menu {TENNIS, GRENADE, MISSILE, GUIDED_MISSILE, UP_RAFT, DOWN_RAFT, NON};

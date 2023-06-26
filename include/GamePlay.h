@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML\Graphics.hpp>
+#include <SFML\audio.hpp>
 #include "Player.h"
 
 using namespace sf;

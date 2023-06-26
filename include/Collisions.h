@@ -25,7 +25,7 @@ namespace {
 
         raftMan.handleCollision(raftBlock.getRectangle());
     }
-
+    
     void tennisWithMan(GameObject& tennis, GameObject& man)
     {
         Tennis& tennisBall = dynamic_cast<Tennis&>(tennis);
@@ -45,6 +45,7 @@ namespace {
 
     void objectileWithUpRaft(Objectile* obj, GameObject& raft)
     {
+        //Objectile& objectile = dynamic_cast<Objectile&>(obj);
         UpRaft& raftBlock = dynamic_cast<UpRaft&>(raft);
 
         obj->handleCollision(raftBlock.getRectangle());
@@ -152,7 +153,7 @@ namespace {
         (*cm)[std::string(typeid(RaftMan).name()) + std::string(typeid(Explosion).name())] = manWithExplosion;
         (*cm)[std::string(typeid(UpRaft).name()) + std::string(typeid(Explosion).name())] = UpRaftWithExplosion;
         (*cm)[std::string(typeid(DownRaft).name()) + std::string(typeid(Explosion).name())] = DownRaftWithExplosion;
-        
+
         return cm;
     }
 

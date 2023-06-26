@@ -22,6 +22,7 @@ void PhysicsBehavior::update(Shape* body)
 {   
     if(m_gravity)
         setVelocity({ getVelocity().x, getVelocity().y + GRAVITY * m_weight });
+    //std::cout << "response: " << m_velocity.x << " , " << m_velocity.y << std::endl;
 
     body->move(m_velocity * (m_timer.restart().asMilliseconds() * 0.08f));
 

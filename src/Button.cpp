@@ -3,7 +3,7 @@
 
 using namespace sf;
 
-Button::Button(Vector2f position, Vector2f size, const std::string& str)
+Button::Button(Vector2f position, Vector2f size, const  std::string& str)
 {
 	m_picture.setTexture(&Resources::instance().getTexture(str));
 	m_picture.setSize(size);

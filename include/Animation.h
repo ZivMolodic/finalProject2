@@ -8,7 +8,7 @@
 class Animation
 {
 public:
-    Animation(const AnimationData& data, DirectionA dir, sf::Sprite& sprite, const std::string& str);
+    Animation(const AnimationData& data, DirectionA dir, sf::Shape* sprite, const  std::string& str);
 
     // Set the direction; the sprite will take the relevant texture rect
     void direction(DirectionA dir);
@@ -26,5 +26,5 @@ private:
     sf::Time m_elapsed = {};
     DirectionA m_dir = DirectionA::Up;
     int m_index = 0;
-    sf::Sprite& m_sprite;
+    sf::Shape* m_sprite;
 };

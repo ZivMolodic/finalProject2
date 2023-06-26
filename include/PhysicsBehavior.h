@@ -25,7 +25,8 @@ public:
     void update(Shape* body);
     void rotate(float rotation);
     virtual sf::Vector2f manageCollision(const sf::Vector2f& position, const RectangleShape& rec = RectangleShape()) = 0;
-    
+    sf::Time getElapsedTime() const { return m_timer.getElapsedTime(); }
+
 protected:
     void handleHit(const Vector2f& surface);
     float dotProduct(const Vector2f& lhs, const Vector2f& rhs)

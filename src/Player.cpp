@@ -165,8 +165,15 @@ void Computer::walk(const sf::Vector2f& destination, RenderWindow* window, const
 	if(!goingUp)
 	{
 		if (onEdge(m_raftMen[m_turn]->getPosition().x))
-			m_destination = sf::Vector2f(m_raftMen[m_turn]->getPosition().x, m_raftMen[m_turn]->getPosition().y + 40);
-
+		{
+			auto position = m_raftMen[m_turn]->getPosition();
+			if (auto find = find_if(m_raft.begin(), m_raft.end(),
+				[&position](const std::unique_ptr<RaftBlock>& r) { return std::abs(position.x -
+					r->getPosition().x) < 5 && position.y > r->getPosition().y; }); find != m_raft.end())
+				m_destination = find->get()->getPosition();
+			else
+				m_destination = sf::Vector2f(m_raftMen[m_turn]->getPosition().x, m_raftMen[m_turn]->getPosition().y + 40);
+		}
 
 		else if (m_raftMen[m_turn]->getPosition().x - destination.x < -1)
 			m_raftMen[m_turn]->play(window, event, Direction::Right);
@@ -265,6 +272,35 @@ Menu Player::buttonPressed(RenderWindow* window, const sf::Event& event)
 	return m_lastButton;
 }
 
+void Player::raftButtons()
+{
+	if (m_raft.size() >= MAX_SIZE_RAFTS)
+	{
+		for (int i = 0; i < m_menu.size(); i++)
+		{
+			if (dynamic_cast<UpRaftButton*>(m_menu[i].get()) != nullptr)
+				m_menu.erase(m_menu.begin() + i);
+			else if (dynamic_cast<DownRaftButton*>(m_menu[i].get()) != nullptr)
+				m_menu.erase(m_menu.begin() + i);
+		}
+	}
+
+	else {
+		bool exist = false;
+		for (int i = 0; i < m_menu.size(); i++)
+			if (dynamic_cast<UpRaftButton*>(m_menu[i].get()) != nullptr)
+			{
+				exist = true;
+				break;
+			}
+		if (!exist)
+		{
+			m_menu.emplace_back(make_unique<UpRaftButton>(Vector2f{ 70,80 }));
+			m_menu.emplace_back(make_unique<DownRaftButton>(Vector2f{ 70,170 }));
+		}
+	}
+}
+
 bool Player::placeRaft(const enum Menu& button, RaftBlock& raftBlock, const Vector2i& cursorLocation)
 {
 	for (const auto& raft : m_raft)
@@ -272,7 +308,7 @@ bool Player::placeRaft(const enum Menu& button, RaftBlock& raftBlock, const Vect
 		Vector2f raftPos = raft->getPosition();
 		float top = raft->getRectangle().getGlobalBounds().top;
 		float width = raft->getGlobalBounds().width;
-
+		
 		if (button == UP_RAFT)
 		{
 			if (UpRaft(Vector2f{ raftPos.x, top - 70 }).getGlobalBounds().contains(Vector2f(cursorLocation)))
@@ -282,17 +318,17 @@ bool Player::placeRaft(const enum Menu& button, RaftBlock& raftBlock, const Vect
 					[&position](const std::unique_ptr<RaftBlock>& r)
 					{ return (r->getPosition().x == position.x) && (r->getPosition().y == position.y); });
 				search == m_raft.end())
-				{
+			{
 					raftBlock.setPosition(Vector2f{ raftPos.x, top - 70 });
-					return true;
-				}
+				return true;
 			}
 		}
-
+		}
+		
 		else if (button == DOWN_RAFT)
 		{
 			if (dynamic_cast<UpRaft*>(raft.get()) != nullptr)
-				return false;
+				return false; 
 
 			if (DownRaft(Vector2f{ raftPos.x + width, raftPos.y }).getGlobalBounds().contains(Vector2f(cursorLocation)))
 			{
@@ -302,10 +338,10 @@ bool Player::placeRaft(const enum Menu& button, RaftBlock& raftBlock, const Vect
 					{ return (r->getPosition().x == position.x) && (r->getPosition().y == position.y); });
 					search == m_raft.end())
 				{
-					raftBlock.setPosition(Vector2f{ raftPos.x + width, raftPos.y });
+				raftBlock.setPosition(Vector2f{ raftPos.x + width, raftPos.y });
 
-					return true;
-				}
+				return true;
+			}
 			}
 
 			else if (DownRaft(Vector2f{ raftPos.x - width, raftPos.y }).getGlobalBounds().contains(Vector2f(cursorLocation)))
@@ -316,14 +352,14 @@ bool Player::placeRaft(const enum Menu& button, RaftBlock& raftBlock, const Vect
 					{ return (r->getPosition().x == position.x) && (r->getPosition().y == position.y); });
 					search == m_raft.end())
 				{
-					raftBlock.setPosition(Vector2f{ raftPos.x - width, raftPos.y });
+				raftBlock.setPosition(Vector2f{ raftPos.x - width, raftPos.y });
 
-						return true;
-				}
+				return true;
 			}
 		}
 	}
-
+	}
+	
 	return false;
 }
 
