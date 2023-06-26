@@ -8,7 +8,7 @@ class Explosion: public GameObject
 {
 public:
     Explosion(const sf::Vector2f& position, float radiusLimit)
-        : GameObject(0,position, "explosion"), m_radiusLimit(radiusLimit)
+        : GameObject(0,position, 'x'), m_radiusLimit(radiusLimit)
     {
         //m_shape.setFillColor(sf::Color::Red);
         //m_shape.setRadius(0);

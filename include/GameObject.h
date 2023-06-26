@@ -10,8 +10,8 @@ class GameObject
 {
 public:
 	//GameObject() {};
-	GameObject(const sf::Vector2f& size, const sf::Vector2f& position, const std::string& str);
-	GameObject(float radius, const sf::Vector2f& position, const std::string& str);
+	GameObject(const sf::Vector2f& size, const sf::Vector2f& position, char c);
+	GameObject(float radius, const sf::Vector2f& position, char c);
 	virtual ~GameObject() = default;
 	sf::FloatRect getGlobalBounds() { return m_shape->getGlobalBounds(); }
 	sf::Vector2f getPosition() const { return m_shape->getPosition(); }
@@ -33,8 +33,8 @@ private:
 class DynamicObject : public GameObject
 {
 public:
-	DynamicObject(const sf::Vector2f& size, const sf::Vector2f& position, const std::string& str, float bounce, float weight);
-	DynamicObject(float radius, const sf::Vector2f& position, const std::string& str, float bounce, float weight);
+	DynamicObject(const sf::Vector2f& size, const sf::Vector2f& position, char c, float bounce, float weight);
+	DynamicObject(float radius, const sf::Vector2f& position, char c, float bounce, float weight);
 	virtual ~DynamicObject() = default;
 	virtual void update() = 0;
 	virtual void handleCollision(const sf::RectangleShape& rec = sf::RectangleShape()) = 0;

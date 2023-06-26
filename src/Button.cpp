@@ -3,9 +3,9 @@
 
 using namespace sf;
 
-Button::Button(Vector2f position, Vector2f size, const std::string& str)
+Button::Button(Vector2f position, Vector2f size, char c)
 {
-	m_picture.setTexture(&Resources::instance().getTexture(str));
+	m_picture.setTexture(&Resources::instance().getTexture(c));
 	m_picture.setSize(size);
 	m_picture.setPosition(position);
 	m_picture.setOrigin(m_picture.getSize() / 2.f);

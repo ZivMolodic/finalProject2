@@ -2,22 +2,22 @@
 
 #include "Resources.h"
 
-const auto AnimationTime = sf::seconds(0.3f);
+const auto AnimationTime = sf::seconds(0.00000001f);
 
-Animation::Animation(const AnimationData& data, DirectionA dir, sf::Sprite& sprite, const std::string& str)
+Animation::Animation(const AnimationData& data, DirectionA dir, sf::Shape* sprite, char c)
     : m_data(data), m_dir(dir), m_sprite(sprite)
 {
-    m_sprite.setTexture(Resources::instance().getTexture(str));
+    m_sprite->setTexture(&Resources::instance().getTexture(c));
     update();
 }
 
 void Animation::direction(DirectionA dir)
 {
-    if (m_dir == dir || dir == DirectionA::Stay)
+    if (m_dir == dir)
     {
         return;
     }
-
+    m_index = 0;
     m_dir = dir;
     update();
 }
@@ -36,5 +36,5 @@ void Animation::update(sf::Time delta)
 
 void Animation::update()
 {
-    m_sprite.setTextureRect(m_data.m_data.find(m_dir)->second[m_index]);
+    m_sprite->setTextureRect(m_data.m_data.find(m_dir)->second[m_index]);
 }

@@ -25,85 +25,21 @@ namespace {
 
         raftMan.handleCollision(raftBlock.getRectangle());
     }
-
-    void tennisWithMan(GameObject& tennis, GameObject& man)
+    
+    void objectileWithDownRaft(GameObject& obj, GameObject& raft)
     {
-        Tennis& tennisBall = dynamic_cast<Tennis&>(tennis);
-        RaftMan& raftMan = dynamic_cast<RaftMan&>(man);
-        
-        //auto explosion = Explosion(tennisBall.getPosition(), 100.f);
-
-        raftMan.handleObjectile(&tennisBall);
-    }
-
-    void objectileWithDownRaft(Objectile* obj, GameObject& raft)
-    {
+        Objectile& objectile = dynamic_cast<Objectile&>(obj);
         DownRaft& raftBlock = dynamic_cast<DownRaft&>(raft);
 
-        obj->handleCollision(raftBlock.getRectangle());
+        objectile.handleCollision(raftBlock.getRectangle());
     }
 
-    void objectileWithUpRaft(Objectile* obj, GameObject& raft)
+    void objectileWithUpRaft(GameObject& obj, GameObject& raft)
     {
+        Objectile& objectile = dynamic_cast<Objectile&>(obj);
         UpRaft& raftBlock = dynamic_cast<UpRaft&>(raft);
 
-        obj->handleCollision(raftBlock.getRectangle());
-    }
-
-    void grenadeWithDownRaft(GameObject& grenade, GameObject& raft)
-    {
-        Grenade& objectile = dynamic_cast<Grenade&>(grenade);
-
-        objectileWithDownRaft(&objectile, raft);
-    }
-
-    void grenadeWithUpRaft(GameObject& grenade, GameObject& raft)
-    {
-        Grenade& objectile = dynamic_cast<Grenade&>(grenade);
-
-        objectileWithUpRaft(&objectile, raft);
-    }
-
-    void tennisWithDownRaft(GameObject& tennis, GameObject& raft)
-    {
-        Tennis& objectile = dynamic_cast<Tennis&>(tennis);
-
-        objectileWithDownRaft(&objectile, raft);
-    }
-
-    void tennisWithUpRaft(GameObject& tennis, GameObject& raft)
-    {
-        Tennis& objectile = dynamic_cast<Tennis&>(tennis);
-
-        objectileWithUpRaft(&objectile, raft);
-    }
-
-    void missileWithDownRaft(GameObject& missile, GameObject& raft)
-    {
-        Missile& objectile = dynamic_cast<Missile&>(missile);
-
-        objectileWithDownRaft(&objectile, raft);
-    }
-
-    void missileWithUpRaft(GameObject& missile, GameObject& raft)
-    {
-        Missile& objectile = dynamic_cast<Missile&>(missile);
-
-        objectileWithUpRaft(&objectile, raft);
-    }
-
-    void guidedMissileWithDownRaft(GameObject& missile, GameObject& raft)
-    {
-        GuidedMissile& objectile = dynamic_cast<GuidedMissile&>(missile);
-
-        objectileWithDownRaft(&objectile, raft);
-    }
-
-    void guidedMissileWithUpRaft(GameObject& missile, GameObject& raft)
-    {
-        GuidedMissile& objectile = dynamic_cast<GuidedMissile&>(missile);
-
-        objectileWithUpRaft(&objectile, raft);
+        objectile.handleCollision(raftBlock.getRectangle());
     }
 
     void manWithExplosion(GameObject& man, GameObject& explosion)
@@ -112,22 +48,6 @@ namespace {
         Explosion& exp = dynamic_cast<Explosion&>(explosion);
 
         raftMan.handleExplosion(exp);
-    }
-
-    void DownRaftWithExplosion(GameObject& upRaft, GameObject& explosion)
-    {
-        DownRaft& raft = dynamic_cast<DownRaft&>(upRaft);
-        Explosion& exp = dynamic_cast<Explosion&>(explosion);
-
-        raft.handleExplosion(exp);
-    }
-
-    void UpRaftWithExplosion(GameObject& upRaft, GameObject& explosion)
-    {
-        UpRaft& raft = dynamic_cast<UpRaft&>(upRaft);
-        Explosion& exp = dynamic_cast<Explosion&>(explosion);
-
-        raft.handleExplosion(exp);
     }
 
 
@@ -140,19 +60,16 @@ namespace {
 
         (*cm)[std::string(typeid(RaftMan).name()) + std::string(typeid(DownRaft).name())] = manWithDownRaft;
         (*cm)[std::string(typeid(RaftMan).name()) + std::string(typeid(UpRaft).name())] = manWithUpRaft;
-        (*cm)[std::string(typeid(Grenade).name()) + std::string(typeid(DownRaft).name())] = grenadeWithDownRaft;
-        (*cm)[std::string(typeid(Grenade).name()) + std::string(typeid(UpRaft).name())] = grenadeWithUpRaft;
-        (*cm)[std::string(typeid(Missile).name()) + std::string(typeid(DownRaft).name())] = missileWithDownRaft;
-        (*cm)[std::string(typeid(Missile).name()) + std::string(typeid(UpRaft).name())] = missileWithUpRaft;
-        (*cm)[std::string(typeid(Tennis).name()) + std::string(typeid(DownRaft).name())] = tennisWithDownRaft;
-        (*cm)[std::string(typeid(Tennis).name()) + std::string(typeid(UpRaft).name())] = tennisWithUpRaft;
-        (*cm)[std::string(typeid(Tennis).name()) + std::string(typeid(RaftMan).name())] = tennisWithMan;
-        (*cm)[std::string(typeid(GuidedMissile).name()) + std::string(typeid(DownRaft).name())] = guidedMissileWithDownRaft;
-        (*cm)[std::string(typeid(GuidedMissile).name()) + std::string(typeid(UpRaft).name())] = guidedMissileWithUpRaft;
+        (*cm)[std::string(typeid(Objectile).name()) + std::string(typeid(DownRaft).name())] = objectileWithDownRaft;
+        (*cm)[std::string(typeid(Objectile).name()) + std::string(typeid(UpRaft).name())] = objectileWithUpRaft;
         (*cm)[std::string(typeid(RaftMan).name()) + std::string(typeid(Explosion).name())] = manWithExplosion;
-        (*cm)[std::string(typeid(UpRaft).name()) + std::string(typeid(Explosion).name())] = UpRaftWithExplosion;
-        (*cm)[std::string(typeid(DownRaft).name()) + std::string(typeid(Explosion).name())] = DownRaftWithExplosion;
-        
+        //(*cm)[std::string(typeid(Pacman).name()) + std::string(typeid(Door).name())] = pacmanWithDoor;
+        //(*cm)[std::string(typeid(Pacman).name()) + std::string(typeid(Key).name())] = pacmanWithKey;
+        //(*cm)[std::string(typeid(Pacman).name()) + std::string(typeid(SuperPresent).name())] = pacmanWithSuperPresent;
+        //(*cm)[std::string(typeid(Pacman).name()) + std::string(typeid(TimePresent).name())] = pacmanWithTimePresent;
+        //(*cm)[std::string(typeid(Pacman).name()) + std::string(typeid(LivesPresent).name())] = pacmanWithLivesPresent;
+        //(*cm)[std::string(typeid(Pacman).name()) + std::string(typeid(FreezePresent).name())] = pacmanWithFreezePresent;
+
         return cm;
     }
 

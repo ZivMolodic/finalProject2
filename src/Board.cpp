@@ -26,27 +26,14 @@ void Board::addObject(GameObject* object)
     //m_objects.push_back(std::unique_ptr<GameObject>(object, deleteGameObject));
 }
 
-void Board::update()
-{
-    m_objects.erase(std::remove_if(m_objects.begin(), m_objects.end(), [](GameObject* obj) {
-        return obj->isDead();
-        }), m_objects.end());
-    
-    m_user->update();
-    m_computer->update();
-
-    for (auto& object : m_objects) 
-        object->update(); 
-}
-
 void Board::draw(RenderWindow* window) 
 {
 	for (auto& object : m_objects)
-        if (std::string(typeid(*object).name()) != std::string("class RaftMan"))
+        if(typeid(*object).name() != "RaftMan")
             object->draw(window);
 
     for (auto& object : m_objects)
-        if (std::string(typeid(*object).name()) == std::string("class RaftMan"))
+        if (typeid(*object).name() == "RaftMan")
             object->draw(window);
 
     m_user->draw(window);

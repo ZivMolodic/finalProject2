@@ -6,6 +6,7 @@
 #include "Resources.h"
 #include "PhysicsBehavior.h"
 #include "GameObject.h"
+#include "Animation.h"
 
 class Player;
 
@@ -25,7 +26,6 @@ public:
 	void handleExplosion(const Explosion& explosion);
 	void handleCollision(const sf::RectangleShape& rec = sf::RectangleShape()) override;
 	RaftBlock* getRaftBlock() const { return m_raftBlock.get(); }
-	void handleObjectile(Objectile* objectile);
 
 private:
 	bool m_holdRaft;
@@ -35,5 +35,7 @@ private:
 	Player* m_team;
 	std::weak_ptr<Weapon> m_weapon;
 	std::unique_ptr<RaftBlock> m_raftBlock;
+	DirectionA m_dir = DirectionA::Stay;
+	Animation m_animation;
 };
 

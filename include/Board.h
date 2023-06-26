@@ -12,7 +12,7 @@ class Board
 public:
 	Board(const sf::Vector2f& playerPosition, const sf::Vector2f& computerPosition, int numOfRaftMen);
 	void addObject(GameObject* object);
-	void update();
+	void update() { for(auto& object: m_objects) object->update(); }
 	void draw(RenderWindow* window);
 	void play(RenderWindow* window, const sf::Event& event);
 	void handleCollisions();

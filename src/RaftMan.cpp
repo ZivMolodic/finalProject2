@@ -1,18 +1,42 @@
 #include "RaftMan.h"
 #include "Player.h"
+#include "Direction.h"
+#include <optional>
+
+namespace
+{
+	std::optional<DirectionA> toDirection(sf::Keyboard::Key key)
+	{
+		switch (key)
+		{
+		case sf::Keyboard::Left:
+			return DirectionA::Left;
+		case sf::Keyboard::Right:
+			return DirectionA::Right;
+		case sf::Keyboard::Up:
+			return DirectionA::Up;
+		case sf::Keyboard::Down:
+			return DirectionA::Down;
+		case sf::Keyboard::Space:
+			return DirectionA::Stay;
+		}
+		return {};
+	}
+}
 
 
 
 RaftMan::RaftMan(Player* team, const sf::Vector2f& position)
-	: DynamicObject({30,60},position,"boy", 0.5, 2), m_team(team),
+	: DynamicObject({30,60},position,'r',0.5,2), m_team(team),
 	m_life(100), m_jumps(false), m_holdRaft(false), m_raftBlock(nullptr),
-	m_lastButton(NON)
+	m_lastButton(NON), 
+	m_animation(Resources::instance().animationData(Resources::RaftMan), DirectionA::Right, m_shape.get(), 'r')
 {}
 
 void RaftMan::update()
 { 
 	m_physics->update(m_shape.get());
-
+	m_animation.update(m_physics->getElapsedTime());
 	if (m_weapon.lock())
 	{
 		m_weapon.lock()->setPosition(getPosition());
@@ -34,6 +58,8 @@ void RaftMan::play(sf::RenderWindow* window, const sf::Event& event, const Direc
 	Menu button = m_team->buttonPressed(window, event);
 	
 	raftManMove(window, event, direction);
+	
+	m_team->raftButtons();
 
 	if (button == UP_RAFT || button == DOWN_RAFT)
 		playWithRaft(button, window, event);
@@ -50,11 +76,13 @@ void RaftMan::raftManMove(sf::RenderWindow* window, const sf::Event& event, cons
 	m_physics->setVelocity({ 0 , m_physics->getVelocity().y });
 	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && direction == Direction::NA) || direction == Direction::Left)
 	{
-		m_shape->setScale({ -1,1 });
 		if (m_physics->isJumping())
 			m_physics->setVelocity({ -2.9f,m_physics->getVelocity().y });
 		else
 		{
+			m_animation.direction(DirectionA::Right);
+			m_shape->setScale(-1, 1);
+
 			m_shape->move({ -1,0 });
 			m_physics->setVelocity({ -0.5,0 });
 			m_physics->setWalking(true);
@@ -63,11 +91,14 @@ void RaftMan::raftManMove(sf::RenderWindow* window, const sf::Event& event, cons
 
 	else if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && direction == Direction::NA) || direction == Direction::Right)
 	{
-		m_shape->setScale({ 1,1 });
+
 		if(m_physics->isJumping())
 			m_physics->setVelocity({ 2.9f,m_physics->getVelocity().y});
 		else
 		{
+			m_animation.direction(DirectionA::Right);
+			m_shape->setScale(1, 1);
+
 			m_shape->move({ 1,1 });
 			m_physics->setVelocity({ 0.5,0 });
 			m_physics->setWalking(true);
@@ -75,19 +106,18 @@ void RaftMan::raftManMove(sf::RenderWindow* window, const sf::Event& event, cons
 	}
 	else if (((sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && direction == Direction::NA) || direction == Direction::Up) && !m_physics->isJumping())
 	{
-		if (m_weapon.lock() && m_weapon.lock()->firing())
-			m_weapon.lock()->rotate(-10);
-		else
-		{
-			m_physics->setJumping(true);
-			m_physics->setVelocity({ 0, -15 });
-		}
+		m_animation.direction(DirectionA::Up);
+
+		m_physics->setJumping(true);
+		m_physics->setVelocity({ 0, -12 });
 	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && direction == Direction::NA)
-	{
-		if (m_weapon.lock() && m_weapon.lock()->firing())
-			m_weapon.lock()->rotate(10);
-	}
+
+	else if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && 
+		!sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && 
+		!sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && 
+		!m_physics->isJumping())
+		m_animation.direction(DirectionA::Stay);
+
 }
 
 void RaftMan::playWithRaft(const enum Menu& button, sf::RenderWindow* window, const sf::Event& event)
@@ -189,22 +219,8 @@ void RaftMan::handleCollision(const sf::RectangleShape& rec)
 void RaftMan::handleExplosion(const Explosion& explosion)
 {
 	auto vec = this->getPosition() - explosion.getPosition();
-	vec += {0, -15};
 	auto norm = std::sqrtf(vec.x * vec.x + vec.y * vec.y);
 	//m_life -= 1 / std::sqrtf(vec.x * vec.x + vec.y * vec.y);
 	m_physics->setBounce(0.85f);
-	m_physics->setVelocity((explosion.getLimitRadius() / norm) * (vec / norm) * 2.f);
-}
-
-void RaftMan::handleObjectile(Objectile* objectile)
-{
-	//auto vec = this->getPosition() - objectile->getPosition();
-	//vec += {0, -15};
-	//auto norm = std::sqrtf(vec.x * vec.x + vec.y * vec.y);
-	//m_life -= 1 / std::sqrtf(vec.x * vec.x + vec.y * vec.y);
-	m_physics->setBounce(0.85f);
-	if (std::abs(objectile->getVelocity().y) < 5)
-		m_physics->setVelocity(sf::Vector2f( objectile->getVelocity().x, -10 ) * 0.5f);
-	else
-		m_physics->setVelocity(sf::Vector2f( objectile->getVelocity().x, -objectile->getVelocity().y ) * 0.5f);
+	m_physics->setVelocity((explosion.getLimitRadius() / norm) * (vec / norm));
 }

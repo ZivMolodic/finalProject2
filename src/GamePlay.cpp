@@ -1,11 +1,13 @@
 #include "GamePlay.h"
 #include "Resources.h"
 #include "Macros.h"
+#include <SFML/audio.hpp>
+
 
 
 GamePlay::GamePlay()
 {
-    m_backGround.setTexture(&Resources::instance().getTexture("gameplay_background"));
+    m_backGround.setTexture(&Resources::instance().getTexture('b'));
     m_backGround.setSize(BACKGROUND_SIZE);
     m_backGround.setPosition({ 0,0 });
 
@@ -17,7 +19,9 @@ GamePlay::GamePlay()
 
 void GamePlay::gameLoop(RenderWindow* window)
 {
-    auto board = Board(Vector2f{ 20, 400 }, Vector2f{ 650,400 }, 1);
+    Resources::instance().playBackGround();
+
+    auto board = Board(Vector2f{ 220, 400 }, Vector2f{ 1150,400 }, 1);
     //auto player = std::make_shared<Player>(1, Vector2f{ 180, 400 });
 
     bool playerTurn = true;
@@ -26,7 +30,7 @@ void GamePlay::gameLoop(RenderWindow* window)
 
     int timeAsSeconds = 30; 
     
-    window->setFramerateLimit(60);
+    window->setFramerateLimit(50);
     //openShot(window, player);
 
     sf::Clock turnTimer;

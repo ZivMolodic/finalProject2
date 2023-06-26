@@ -18,6 +18,7 @@ public:
     virtual ~Player() = default;
     void update();
     void draw(sf::RenderWindow* window);
+    void raftButtons();
     void addRaft(RaftMan& pawn, const enum Menu& button);
     bool placeRaft(const enum Menu& button, RaftBlock& raftBlock, const Vector2i& cursorLocation);
     Menu buttonPressed(RenderWindow* window, const sf::Event& event);
@@ -50,7 +51,6 @@ protected:
 private:
     Board* m_board;
     void initRaftMen();
-    void initWeapons();
     void initMenu();
     vector<std::shared_ptr<Weapon>> m_weapons;
     bool m_playing;

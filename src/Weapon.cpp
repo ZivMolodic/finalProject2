@@ -1,7 +1,7 @@
 #include "Weapon.h"
 
-Weapon:: Weapon(const std::string& str)
-	: DynamicObject({ 55.f, 25.f }, {0,0}, str ,0,0), m_objectile(nullptr)
+Weapon:: Weapon()
+	: DynamicObject({ 55.f, 25.f }, {0,0},'g',0,0), m_objectile(nullptr)
 {
 	m_shape->setOrigin({ 0 , 12.5f });
 }
@@ -13,7 +13,7 @@ void Weapon::shot(const sf::Vector2f& destination, const sf::Vector2f& position)
 
 	auto launchPosition = m_shape->getTransform().transformPoint({ m_shape->getLocalBounds().left + m_shape->getLocalBounds().width, m_shape->getLocalBounds().top + 7.5f });
 
-	m_objectile = createObjectile(launchPosition, destination);
+	m_objectile = std::make_shared<Objectile>(launchPosition, destination);
 }
 
 void Weapon::update()
@@ -39,13 +39,6 @@ void Weapon::draw(RenderWindow* window, const sf::Vector2f& position) const
 	if (m_objectile)
 		m_objectile->draw(window);
 	else
-		drawAim(window, angle, mousePosition);
-
-}
-
-void Weapon::drawAim(sf::RenderWindow* window, float angle, const sf::Vector2f& mousePosition) const
-{
-	if(!m_objectile)
 	{
 		auto velocity = (mousePosition - getPosition());
 
@@ -55,7 +48,7 @@ void Weapon::drawAim(sf::RenderWindow* window, float angle, const sf::Vector2f& 
 		float velocityY = abs(velocity.y) * sin(angle * 3.14159f / 180.f);
 
 		std::vector<sf::CircleShape> dots;
-		auto potentialPosition = m_shape->getTransform().transformPoint({ m_shape->getLocalBounds().left + m_shape->getLocalBounds().width, m_shape->getLocalBounds().top + 7.5f });
+		auto potentialPosition = m_shape->getTransform().transformPoint({ m_shape->getLocalBounds().left + m_shape->getLocalBounds().width, m_shape->getLocalBounds().top + 7.5f});
 		auto initialPosition = potentialPosition;
 		auto circle = sf::CircleShape(3);
 		circle.setFillColor(sf::Color::Green);
@@ -76,5 +69,12 @@ void Weapon::drawAim(sf::RenderWindow* window, float angle, const sf::Vector2f& 
 
 		for (const auto& dot : dots)
 			window->draw(dot);
+		//while (potentialPosition.y < BACKGROUND_SIZE.y && potentialPosition.x < BACKGROUND_SIZE.x)
+		//for (int i = 0; i < 1000; ++i)
+		//{
+		//	time += 1;
+		//	if (rec.getRec().getGlobalBounds().contains(sf::Vector2f(position.x + velocityX * time, position.y + velocityY * time + 25.f * GRAVITY * time * time)))
+		//		this->shot(velocity * 0.06f);
+		//}
 	}
 }

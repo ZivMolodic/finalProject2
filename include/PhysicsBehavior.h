@@ -9,7 +9,8 @@ using namespace sf;
 class PhysicsBehavior
 {
 public:
-    PhysicsBehavior(float bounce, float weight);
+    PhysicsBehavior(float bounce, float weight) : m_weight(weight), m_velocity{ 0,0 } , m_jumping(false),
+        m_rotate(false), m_bounce(bounce), m_walking(false) { if (weight < 0)m_weight = 1; m_timer.restart(); }
     virtual ~PhysicsBehavior() = default;
     Vector2f getVelocity() const { return m_velocity; }
     void setWalking(bool walks = true) { m_walking = walks; }
@@ -21,11 +22,10 @@ public:
     void setBodyToRotate(bool rotate = true) { m_rotate = rotate; }
     void setBounce(float bounce) { (bounce >= 0) ? m_bounce = bounce : m_bounce = 0; }
     float getBounce() { return m_bounce; }
-    void setGravity(bool gravity = true) { m_gravity = gravity; }
     void update(Shape* body);
-    void rotate(float rotation);
     virtual sf::Vector2f manageCollision(const sf::Vector2f& position, const RectangleShape& rec = RectangleShape()) = 0;
-    
+    sf::Time getElapsedTime() const { return m_timer.getElapsedTime(); }
+
 protected:
     void handleHit(const Vector2f& surface);
     float dotProduct(const Vector2f& lhs, const Vector2f& rhs)
@@ -43,8 +43,6 @@ private:
     bool m_rotate;
     int m_weight;
     bool m_walking;
-    bool m_gravity;
-    int m_stabilty;
     Vector2f m_velocity;
     Clock m_timer;
 };
