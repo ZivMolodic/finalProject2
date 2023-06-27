@@ -28,7 +28,7 @@ public:
     virtual void play(RenderWindow* window, const sf::Event& event);
     bool isPlaying() const;
     void resetButton() { m_lastButton = Menu::NON; }
-    virtual void setPlay() { m_playing = true; m_lastButton = Menu::NON;}
+    virtual void setPlay();
     bool shooting() { auto search = find_if(m_weapons.begin(), m_weapons.end(), [](std::shared_ptr<Weapon> w) { return w->firing(); }); return search != m_weapons.end(); }
     sf::Vector2f getObjectilePosition()
     {
@@ -38,41 +38,40 @@ public:
 
     }
     sf::Vector2f getUserPosition() const;
-    //void handleCollision(const RectangleShape& rec)
-    //{
-    //    auto search = find_if(m_weapons.begin(), m_weapons.end(), [](std::shared_ptr<Weapon> w) { return w->firing(); });
-    //    if (search != m_weapons.end())
-    //        search->get()->handleCollision(rec);
-
-    //}
+    sf::Vector2f getExplosionPosition() const { return m_explosionPosition; }
+    bool isDead() { return m_raftMen.size() <= 0; }
 protected:
     Board* getBoard() { return m_board; }
     vector<std::unique_ptr<RaftBlock>> m_raft;
     vector<std::unique_ptr<RaftMan>> m_raftMen;
     void restartTimer();
-//void setPlay() { m_playing = true; }
+    sf::Clock m_timer;
+    bool m_playing;
 private:
     Board* m_board;
     void initRaftMen();
     void initWeapons();
     void initMenu();
     vector<std::shared_ptr<Weapon>> m_weapons;
-    bool m_playing;
+
     int m_crewSize;
     sf::Vector2f m_position;
+    sf::Vector2f m_explosionPosition;
     std::vector<std::unique_ptr<GameMenuButton>> m_menu;
     enum Menu m_lastButton;
-    sf::Clock m_timer;
 };
 
 
 class Computer : public Player
 {
 public:
-    Computer(int numOfRaftMen, const sf::Vector2f& position, Board* board) : Player(numOfRaftMen, position, board), m_turn(0), m_play(false) {}
+    Computer(int numOfRaftMen, const sf::Vector2f& position, Board* board)
+        : Player(numOfRaftMen, position, board), m_turn(0), m_play(false), m_initTurn(false) {}
     void play(RenderWindow* window, const sf::Event& event) override;
     void setPlay() override;
+
 private:
+    void buildRaft();
     void walk(const sf::Vector2f& destination, RenderWindow* window, const sf::Event& event);
     void aim(const sf::Vector2f& target, RenderWindow* window, const sf::Event& event);
     sf::Vector2f calculateDirection(const sf::Vector2f& shooterPosition, const sf::Vector2f& targetPosition, float projectileSpeed);
@@ -82,4 +81,5 @@ private:
     sf::Vector2f m_userPosition;
     sf::Vector2f m_destination;
     bool m_play;
+    bool m_initTurn;
 };

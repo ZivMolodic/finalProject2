@@ -20,6 +20,7 @@ public:
 	sf::Vector2f getObjectilePosition() { if (m_objectile) return m_objectile->getPosition(); }
 	void handleCollision(const RectangleShape& rec) override { if (m_objectile) m_objectile->handleCollision(rec); }
 	void rotate(float rotation) { if (m_objectile) m_objectile->rotate(rotation); }
+	bool explodes() { if (m_objectile) return m_objectile->explodes(); return false; }
 protected:
 	virtual void drawAim(sf::RenderWindow* window, float angle, const sf::Vector2f& mousePosition) const;
 

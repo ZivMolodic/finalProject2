@@ -19,7 +19,8 @@ public:
 	sf::Vector2f getUserPosition() const;
 	bool shooting() const ;
 	sf::Vector2f getObjectilePosition() const;
-	sf::Vector2f getPosition() const;
+	sf::Vector2f getViewPosition() const;
+	bool isPlaying();
 
 private:
 	bool m_userTurn;

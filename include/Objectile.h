@@ -16,6 +16,7 @@ public:
     void draw(sf::RenderWindow* window, const sf::Vector2f& position = sf::Vector2f()) const override { if (!m_explosion) window->draw(*m_shape); else m_explosion->draw(window); }
     bool setteled() { if (m_explosion) return m_explosion->isFinished(); return false; }
     std::shared_ptr<GameObject> getObjectile() { if (m_explosion) return m_explosion; else return this->shared_from_this(); }
+    bool explodes() { if (m_explosion) return true; return false; }
     sf::Vector2f getVelocity() { return m_physics->getVelocity(); }
     void rotate(float rotation) { if (m_enableRotation) m_physics->rotate(rotation); }
 protected:

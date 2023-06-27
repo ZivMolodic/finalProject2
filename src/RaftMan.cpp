@@ -29,7 +29,7 @@ RaftMan::RaftMan(Player* team, const sf::Vector2f& position)
 	: DynamicObject({30,60},position,"minions", 0.5, 2), m_team(team),
 	m_life(100), m_jumps(false), m_holdRaft(false), m_raftBlock(nullptr),
 	m_lastButton(NON), m_shot(false),
-	m_animation(Resources::instance().animationData(Resources::RaftMan), DirectionA::Right, m_shape.get(), "minions")
+	m_animation(Resources::instance().animationData(Resources::RaftMan), DirectionA::Stay, m_shape.get(), "minions")
 {}
 
 void RaftMan::update()
@@ -97,7 +97,7 @@ void RaftMan::raftManMove(sf::RenderWindow* window, const sf::Event& event, cons
 			m_animation.direction(DirectionA::Right);
 			m_shape->setScale(-1, 1);
 			m_shape->move({ -1,0 });
-			m_physics->setVelocity({ -0.5,0 });
+			m_physics->setVelocity({ -0.5,m_physics->getVelocity().y });
 			m_physics->setWalking(true);
 		}
 	}
@@ -111,8 +111,8 @@ void RaftMan::raftManMove(sf::RenderWindow* window, const sf::Event& event, cons
 		{
 			m_shape->setScale({ 1,1 });
 			m_animation.direction(DirectionA::Right);
-			m_shape->move({ 1,1 });
-			m_physics->setVelocity({ 0.5,0 });
+			m_shape->move({ 1,0 });
+			m_physics->setVelocity({ 0.5,m_physics->getVelocity().y });
 			m_physics->setWalking(true);
 		}
 	}

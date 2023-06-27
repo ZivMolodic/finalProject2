@@ -16,8 +16,19 @@ Board::Board(const sf::Vector2f& playerPosition, const sf::Vector2f& computerPos
     m_computer->update();
 }
 
-sf::Vector2f Board::getPosition() const
+bool Board::isPlaying()
 {
+    return !m_computer->isDead() && !m_user->isDead();
+}
+
+sf::Vector2f Board::getViewPosition() const
+{
+    if (m_userTurn && m_user->getExplosionPosition() != sf::Vector2f())
+        return m_user->getExplosionPosition();
+
+    if (!m_userTurn && m_computer->getExplosionPosition() != sf::Vector2f())
+        return m_computer->getExplosionPosition();
+
     if (shooting())
         return getObjectilePosition();
 

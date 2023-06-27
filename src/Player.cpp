@@ -46,7 +46,7 @@ void Player::initRaftMen()
 	for (int i = 0; i < m_crewSize; ++i)
 	{
 		auto self = this;
-		auto raftMan = new RaftMan(self, sf::Vector2f(m_position.x, m_position.y - 20));
+		auto raftMan = new RaftMan(self, sf::Vector2f(m_position.x + 30*i, m_position.y - 20));
 		m_raftMen.emplace_back(raftMan);
 		m_board->addObject(raftMan);
 	}
@@ -63,6 +63,13 @@ void Player::initMenu()
 }
 
 
+void Player::setPlay()
+{ 
+	m_playing = true; 
+	m_lastButton = Menu::NON; 
+	m_explosionPosition = sf::Vector2f();
+}
+
 void Player::update()
 {
 	//m_timer.restart();
@@ -74,7 +81,11 @@ void Player::update()
 	//	//pawn.handleCollision(m_raft[0]->getRec());
 	//}
 	for (auto& x : m_weapons) 
+	{
 		x->update();
+		if (x->explodes())
+			m_explosionPosition = x->getObjectile()->getPosition();
+	}
 
 	m_raft.erase(std::remove_if(m_raft.begin(), m_raft.end(), [](const std::unique_ptr<RaftBlock>& raft) {
 		return raft->isDead();
@@ -88,7 +99,6 @@ void Player::update()
 
 bool Player::isPlaying() const
 {
-	std::cout << m_timer.getElapsedTime().asSeconds() << std::endl;
 	if(!m_playing)
 		return m_timer.getElapsedTime().asSeconds() < 8;
 
@@ -149,34 +159,38 @@ void Computer::setPlay()
 {
 	Player::setPlay();
 	m_play = false;
+	m_initTurn = false;
+	m_timer.restart();
 }
 
 void Computer::play(RenderWindow* window, const sf::Event& event)
 {
-	if(!m_play)
+	if(m_playing && m_timer.getElapsedTime().asSeconds() > 3)
 	{
-		if (!isPlaying())
+		if (!m_initTurn)
 		{
 			//illustrates computer thinking
 			//sf::Clock timer;
 			//timer.restart();
 			//while (timer.getElapsedTime().asSeconds() < 2.f);
 
-			setPlay();
+			m_initTurn = true;
 			m_userPosition = getBoard()->getUserPosition();
-			m_turn = 0;
-			//m_turn = (m_turn + 1) % m_raftMen.size();
-			//m_destination = m_raft[rand() % m_raft.size()]->getPosition();
-			m_destination = m_raft[0]->getPosition();
+			//m_turn = 0;
+			m_turn = (m_turn + 1) % m_raftMen.size();
+			m_destination = m_raft[rand() % m_raft.size()]->getPosition();
+			//m_destination = m_raft[2]->getPosition();
 		}
 		
 
 		if (std::abs(m_raftMen[m_turn]->getPosition().y + 40 - m_destination.y) > 2 ||
 			std::abs(m_raftMen[m_turn]->getPosition().x - m_destination.x) > 2)
 			walk(m_destination, window, event);
+		else if (rand() % 4 == 0 && m_raft.size() <= 8)
+			buildRaft();
 		else
 			aim(m_userPosition, window, event);
-			//m_raftMen[m_turn]->playWithRaft(window, event);
+
 	}
 }
 
@@ -269,8 +283,10 @@ void Computer::aim(const sf::Vector2f& target, RenderWindow* window, const sf::E
 {
 	//m_raftMen[m_turn]->shoot(calculateDirection(m_raftMen[m_turn]->getPosition(), target, 13.f));
 	//m_raftMen[m_turn]->shoot({-11,-11});
-	m_raftMen[m_turn]->shoot(sf::Vector2f(1 * calculateVelocity(target, m_raftMen[m_turn]->getPosition()), -20), Menu::TENNIS);
-	m_play = true;
+	std::vector<Menu> vec{ Menu::TENNIS, Menu::GRENADE , Menu::MISSILE };
+	m_raftMen[m_turn]->shoot(sf::Vector2f(1 * calculateVelocity(target, m_raftMen[m_turn]->getPosition()), -20), vec[rand() % vec.size()]);
+	m_playing = false;
+	m_timer.restart();
 }
 
 sf::Vector2f Computer::calculateDirection(const sf::Vector2f& shooterPosition, const sf::Vector2f& targetPosition, float projectileSpeed)
@@ -420,3 +436,51 @@ void Player::addRaft(RaftMan& pawn, const enum Menu& button)
 
 	m_lastButton = NON;
 }
+
+
+void Computer::buildRaft()
+{
+	while (true)
+	{
+		int index = rand() % m_raft.size();
+		if (dynamic_cast<UpRaft*>(m_raft[index].get()) != nullptr)
+			continue;
+
+		int raftType = rand() % 3;
+		RaftBlock* raft = nullptr;
+		switch (raftType)
+		{
+		case 1:
+		{
+			raft = new UpRaft(Vector2f{ m_raft[index]->getPosition().x, m_raft[index]->getPosition().y - 60 });
+			break;
+		}
+		case 2:
+		{
+			raft = new DownRaft(Vector2f{ m_raft[index]->getPosition().x + m_raft[index]->getGlobalBounds().width, m_raft[index]->getPosition().y });
+			break;
+		}
+		case 0:
+		{
+			raft = new DownRaft(Vector2f{ m_raft[index]->getPosition().x - m_raft[index]->getGlobalBounds().width, m_raft[index]->getPosition().y });
+			break;
+		}
+		}
+
+		bool exist = false;
+		for (const auto& x : m_raft)
+			if (raft != nullptr && x.get()->getPosition() == raft->getPosition())
+			{
+				exist = true;
+				break;
+			}
+		if (!exist)
+		{
+			m_raft.emplace_back(raft);
+			getBoard()->addObject(raft);
+			break;
+		}
+	}
+	m_playing = false;
+}
+
