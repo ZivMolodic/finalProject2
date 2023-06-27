@@ -3,15 +3,28 @@
 #include "Collisions.h"
 
 Board::Board(const sf::Vector2f& playerPosition, const sf::Vector2f& computerPosition, int numOfRaftMen)
-    : m_user(nullptr), m_computer(nullptr)
+    : m_user(nullptr), m_computer(nullptr), m_userTurn(true),
+    m_userPosition(playerPosition), m_computerPosition(computerPosition)
 {
     // Create the Board object without initializing m_user and m_computer
 
     // Create the Players after the Board object is fully constructed
     m_user = std::make_shared<Player>(numOfRaftMen, playerPosition, this);
     m_user->update();
+    m_user->setPlay();
     m_computer = std::make_shared<Computer>(numOfRaftMen, computerPosition, this);
     m_computer->update();
+}
+
+sf::Vector2f Board::getPosition() const
+{
+    if (shooting())
+        return getObjectilePosition();
+
+    if (m_userTurn) 
+        return m_userPosition; 
+
+    return m_computerPosition; 
 }
 
 sf::Vector2f Board::getUserPosition() const
@@ -52,9 +65,30 @@ void Board::draw(RenderWindow* window)
     m_user->draw(window);
 }
 void Board::play(RenderWindow* window, const sf::Event& event) 
-{ 
-	m_user->play(window, event);
-    //m_computer->play(window, event);
+{
+    static bool x = false;
+    if (m_userTurn)
+    {
+        if (x)
+            x = x;
+        m_user->play(window, event);
+        if (!m_user->isPlaying())
+        {
+            m_userTurn = false;
+            m_computer->setPlay();
+        }
+    }
+    else 
+    {
+        x = true;
+        m_computer->play(window, event);
+        if (!m_computer->isPlaying())
+        {
+            m_userTurn = true;
+            m_user->setPlay();
+        }
+    }
+    //m_user->play(window, event);
 }
 
 void Board::handleCollisions()
@@ -82,4 +116,19 @@ void Board::handleCollisions()
     }
 
 
+}
+
+
+bool Board::shooting() const
+{ 
+    return m_user->shooting() || m_computer->shooting();
+}
+
+sf::Vector2f Board::getObjectilePosition() const
+{
+    if (m_user->shooting()) 
+        return m_user->getObjectilePosition(); 
+    
+    if (m_computer->shooting()) 
+        return m_computer->getObjectilePosition();
 }

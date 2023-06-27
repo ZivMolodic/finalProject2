@@ -21,9 +21,8 @@ void GamePlay::gameLoop(RenderWindow* window)
 {
     Resources::instance().playBackGround();
 
-    auto board = Board(Vector2f{ 220, 400 }, Vector2f{ 1150,400 }, 1);
-    //auto player = std::make_shared<Player>(1, Vector2f{ 180, 400 });
-
+    auto board = Board(Vector2f{ 220, 400 }, Vector2f{ 750,400 }, 1);
+    
     bool playerTurn = true;
 
     auto view = sf::View(sf::FloatRect(0, 0, WINDOW_SIZE.x, WINDOW_SIZE.y));
@@ -82,23 +81,23 @@ void GamePlay::gameLoop(RenderWindow* window)
 
 
         board.play(window, event);
-        //if (playerTurn)
-        //{
-        //    player->play(window, event);
-        //    //playerTurn = false;
-        //}
-        //else if (player->isPlaying())
-        //    player->play(window, event);
-        
 
-        //if (board->shooting())
-        //{
-        //    sf::Vector2f objPosition = board->getObjectilePosition();
-        //    if (objPosition.x - view.getSize().x/2.f > 0 && objPosition.x + view.getSize().x/2.f <= m_backGround.getSize().x)
-        //        view.setCenter({ objPosition.x, view.getCenter().y });
-        //}
-        //else
-        //    view.setCenter({ view.getSize().x / 2.f , view.getCenter().y });
+        if (board.shooting())
+        {
+            sf::Vector2f objPosition = board.getObjectilePosition();
+            if (objPosition.x - view.getSize().x/2.f > 0 && objPosition.x + view.getSize().x/2.f <= m_backGround.getSize().x)
+                view.setCenter({ objPosition.x, view.getCenter().y });
+        }
+        else
+        {
+            sf::Vector2f position = board.getObjectilePosition();
+            if(position.x - view.getSize().x / 2.f < 0)
+                view.setCenter({ view.getSize().x / 2.f , view.getCenter().y });
+            else if (position.x + view.getSize().x / 2.f > BACKGROUND_SIZE.x)
+                view.setCenter({BACKGROUND_SIZE.x - view.getSize().x / 2.f , view.getCenter().y });
+            else
+                view.setCenter(board.getPosition().x, view.getCenter().y);
+        }
 
     }
 }

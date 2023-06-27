@@ -1,7 +1,7 @@
 #include "Weapon.h"
 
-Weapon:: Weapon(const std::string& str)
-	: DynamicObject({ 55.f, 25.f }, {0,0}, str ,0,0), m_objectile(nullptr)
+Weapon:: Weapon(const sf::Vector2f& size, const std::string& str)
+	: DynamicObject(size, {0,0}, str ,0,0), m_objectile(nullptr)
 {
 	m_shape->setOrigin({ 0 , 12.5f });
 }

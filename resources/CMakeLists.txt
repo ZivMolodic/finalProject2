@@ -32,6 +32,7 @@ configure_file ("missile_launcher.png" ${CMAKE_BINARY_DIR} COPYONLY)
 configure_file ("remote.png" ${CMAKE_BINARY_DIR} COPYONLY)
 configure_file ("tennis_gun.png" ${CMAKE_BINARY_DIR} COPYONLY)
 configure_file ("tennis.png" ${CMAKE_BINARY_DIR} COPYONLY)
+configure_file ("remote.png" ${CMAKE_BINARY_DIR} COPYONLY)
 
 configure_file ("timer.wav" ${CMAKE_BINARY_DIR} COPYONLY)
 configure_file ("finish_level.wav" ${CMAKE_BINARY_DIR} COPYONLY)

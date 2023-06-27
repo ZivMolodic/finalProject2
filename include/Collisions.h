@@ -32,8 +32,8 @@ namespace {
         RaftMan& raftMan = dynamic_cast<RaftMan&>(man);
         
         //auto explosion = Explosion(tennisBall.getPosition(), 100.f);
-
-        raftMan.handleObjectile(&tennisBall);
+        if(tennisBall.getFlightTime() > 0.5f)
+            raftMan.handleObjectile(&tennisBall);
     }
 
     void objectileWithDownRaft(Objectile* obj, GameObject& raft)

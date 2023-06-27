@@ -24,9 +24,11 @@ public:
     Menu buttonPressed(RenderWindow* window, const sf::Event& event);
     void getWeapon(RaftMan& pawn, enum Menu weapon);
     std::shared_ptr<GameObject> getObjectile() { for (const auto& x : m_weapons) if (x->firing())return x->getObjectile(); }
-    void done(RaftMan& pawn) { m_playing = false; }
+    void done(RaftMan& pawn);
     virtual void play(RenderWindow* window, const sf::Event& event);
-    bool isPlaying() const { return m_playing; }
+    bool isPlaying() const;
+    void resetButton() { m_lastButton = Menu::NON; }
+    virtual void setPlay() { m_playing = true; m_lastButton = Menu::NON;}
     bool shooting() { auto search = find_if(m_weapons.begin(), m_weapons.end(), [](std::shared_ptr<Weapon> w) { return w->firing(); }); return search != m_weapons.end(); }
     sf::Vector2f getObjectilePosition()
     {
@@ -47,7 +49,8 @@ protected:
     Board* getBoard() { return m_board; }
     vector<std::unique_ptr<RaftBlock>> m_raft;
     vector<std::unique_ptr<RaftMan>> m_raftMen;
-    void setPlay() { m_playing = true; }
+    void restartTimer();
+//void setPlay() { m_playing = true; }
 private:
     Board* m_board;
     void initRaftMen();
@@ -59,6 +62,7 @@ private:
     sf::Vector2f m_position;
     std::vector<std::unique_ptr<GameMenuButton>> m_menu;
     enum Menu m_lastButton;
+    sf::Clock m_timer;
 };
 
 
@@ -67,7 +71,7 @@ class Computer : public Player
 public:
     Computer(int numOfRaftMen, const sf::Vector2f& position, Board* board) : Player(numOfRaftMen, position, board), m_turn(0), m_play(false) {}
     void play(RenderWindow* window, const sf::Event& event) override;
-
+    void setPlay() override;
 private:
     void walk(const sf::Vector2f& destination, RenderWindow* window, const sf::Event& event);
     void aim(const sf::Vector2f& target, RenderWindow* window, const sf::Event& event);

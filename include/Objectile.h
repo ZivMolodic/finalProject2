@@ -43,6 +43,7 @@ class Tennis : public Objectile
 public:
     Tennis(const sf::Vector2f& position, const sf::Vector2f& destination) : Objectile(position, destination, "tennis", 0, 6.f) {}
     void handleCollision(const RectangleShape& rec) override;
+    float getFlightTime() { return m_timer.getElapsedTime().asSeconds(); }
 };
 
 class Missile : public Objectile

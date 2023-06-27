@@ -22,7 +22,7 @@ public:
 	virtual sf::RectangleShape getRectangle() const = 0;
 	void handleExplosion(const Explosion& explosion)
 	{
-		this->setDead();
+		//this->setDead();
 	}
 	
 private:

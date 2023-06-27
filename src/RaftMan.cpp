@@ -28,26 +28,40 @@ namespace
 RaftMan::RaftMan(Player* team, const sf::Vector2f& position)
 	: DynamicObject({30,60},position,"minions", 0.5, 2), m_team(team),
 	m_life(100), m_jumps(false), m_holdRaft(false), m_raftBlock(nullptr),
-	m_lastButton(NON),
+	m_lastButton(NON), m_shot(false),
 	m_animation(Resources::instance().animationData(Resources::RaftMan), DirectionA::Right, m_shape.get(), "minions")
 {}
 
 void RaftMan::update()
-{ 
+{
+	if (getPosition().y > BACKGROUND_SIZE.y)
+	{
+		setDead();
+		return;
+	}
 	m_physics->update(m_shape.get());
 	m_animation.update(m_physics->getElapsedTime());
-	if (m_weapon.lock())
+	if (m_weapon)
 	{
-		m_weapon.lock()->setPosition(getPosition());
-		m_weapon.lock()->update();
+		if (m_shot && !m_weapon->firing())
+		{
+			m_shot = false;
+			m_weapon = nullptr;
+			m_team->resetButton();
+		}
+		else
+		{
+			m_weapon->setPosition(getPosition());
+			m_weapon->update();
+		}
 	}
 }
 
 void RaftMan::draw(sf::RenderWindow* window, const sf::Vector2f& position) const
 {
 	window->draw(*m_shape);
-	if (m_weapon.lock())
-		m_weapon.lock()->draw(window, { m_shape->getPosition().x, getPosition().y + 5 });
+	if (m_weapon)
+		m_weapon->draw(window, { m_shape->getPosition().x, getPosition().y + 5 });
 	if (m_holdRaft)
 		m_raftBlock->draw(window);
 }
@@ -104,8 +118,8 @@ void RaftMan::raftManMove(sf::RenderWindow* window, const sf::Event& event, cons
 	}
 	else if (((sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && direction == Direction::NA) || direction == Direction::Up) && !m_physics->isJumping())
 	{
-		if (m_weapon.lock() && m_weapon.lock()->firing())
-			m_weapon.lock()->rotate(-10);
+		if (m_weapon && m_weapon->firing())
+			m_weapon->rotate(-10);
 		else
 		{
 			m_animation.direction(DirectionA::Up);
@@ -115,8 +129,8 @@ void RaftMan::raftManMove(sf::RenderWindow* window, const sf::Event& event, cons
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && direction == Direction::NA)
 	{
-		if (m_weapon.lock() && m_weapon.lock()->firing())
-			m_weapon.lock()->rotate(10);
+		if (m_weapon && m_weapon->firing())
+			m_weapon->rotate(10);
 	}
 	else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up) &&
 		!sf::Keyboard::isKeyPressed(sf::Keyboard::Left) &&
@@ -188,13 +202,15 @@ void RaftMan::playWithWeapon(const enum Menu& button, sf::RenderWindow* window, 
 		if(button != m_lastButton)
 			m_team->getWeapon(*this, button);
 
-		else if (m_weapon.lock())
+		else if (m_weapon)
 		{
 			sf::Vector2i mousePosition = sf::Mouse::getPosition(*window); // Get the global mouse position
 			sf::Vector2f localPosition = window->mapPixelToCoords(mousePosition); // Convert to local coordinates
 
-			m_weapon.lock()->shot((localPosition - m_shape->getPosition()) * 0.06f);
-			m_weapon.lock() = nullptr;
+			m_weapon->shot((localPosition - m_shape->getPosition()) * 0.06f);
+			//m_team->setButtonStart();
+			//m_weapon = nullptr;
+			m_shot = true;
 			m_team->done(*this);
 		}
 	}
@@ -207,7 +223,9 @@ void RaftMan::playWithWeapon(const enum Menu& button, sf::RenderWindow* window, 
 void RaftMan::shoot(const sf::Vector2f& velocity, const enum Menu& button)
 {
 	m_team->getWeapon(*this, button);
-	m_weapon.lock()->shot(velocity, { m_shape->getPosition().x, getPosition().y + 5 });
+	m_weapon->shot(velocity, { m_shape->getPosition().x, getPosition().y + 5 });
+	m_shot = true;
+	m_team->done(*this);
 }
 
 void RaftMan::handleCollision(const sf::RectangleShape& rec)

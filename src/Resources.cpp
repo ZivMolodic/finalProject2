@@ -150,7 +150,7 @@ void Resources::loadGraphics()
         "missile.png", "down_raft_button.png", "missile_launcher.png" ,
 			 "tennis_button.png", "up_raft_button.png", "minions.png",
 			"guided_missile_button.png","grenade_button.png", "volume.png", "mute.png"
-		,"missile_button.png", "menuBlock.png", "tennis.png",
+		,"missile_button.png", "menuBlock.png", "tennis.png", "remote.png",
 		"main_background.png" ,"gameplay_background.png" , "tennis_gun.png",
 		"grenade.png", "grenade_launcher.png", "raft.png", "up_raft1.png", "explosion.png"};
 
@@ -159,8 +159,6 @@ void Resources::loadGraphics()
 	for (int i = 0; i < pngNames.size(); i++)
 	{
 		auto texture = sf::Texture();
-		//texture.loadFromFile(pngNames[i]);
-		//texture.setSmooth(true);
 		m_textures.insert({ pngNames[i], texture });
 		m_textures[pngNames[i]].loadFromFile(pngNames[i]);
 		m_textures[pngNames[i]].setSmooth(true);

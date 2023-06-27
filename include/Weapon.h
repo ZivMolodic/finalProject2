@@ -10,7 +10,7 @@
 class Weapon: public DynamicObject
 {
 public:
-	Weapon(const std::string& str);
+	Weapon(const sf::Vector2f& size ,const std::string& str);
 	virtual ~Weapon() = default;
 	bool firing() const { return m_objectile != nullptr; }
 	void shot(const sf::Vector2f& destination, const sf::Vector2f& position = sf::Vector2f());
@@ -32,7 +32,7 @@ private:
 class GrenadeLauncher : public Weapon
 {
 public:
-	GrenadeLauncher(): Weapon("grenade_launcher") {}
+	GrenadeLauncher(): Weapon({ 55.f, 25.f }, "grenade_launcher") {}
 private:
 	std::shared_ptr<Objectile> createObjectile(const sf::Vector2f& launchPosition, const sf::Vector2f& destination) override
 	{
@@ -44,7 +44,7 @@ private:
 class TennisGun : public Weapon
 {
 public:
-	TennisGun() : Weapon("tennis_gun") {}
+	TennisGun() : Weapon({ 25.f, 25.f }, "tennis_gun") {}
 private:
 	std::shared_ptr<Objectile> createObjectile(const sf::Vector2f& launchPosition, const sf::Vector2f& destination) override
 	{
@@ -56,7 +56,7 @@ private:
 class MissileLauncher : public Weapon
 {
 public:
-	MissileLauncher() : Weapon("missile_launcher") {}
+	MissileLauncher() : Weapon({ 55.f, 25.f }, "missile_launcher") {}
 private:
 	std::shared_ptr<Objectile> createObjectile(const sf::Vector2f& launchPosition, const sf::Vector2f& destination) override
 	{
@@ -68,7 +68,7 @@ private:
 class Remote : public Weapon
 {
 public:
-	Remote() : Weapon("remote") {}
+	Remote() : Weapon({ 15.f, 25.f }, "remote") {}
 
 private:
 	virtual void drawAim(sf::RenderWindow* window, float angle, const sf::Vector2f& mousePosition) const {}

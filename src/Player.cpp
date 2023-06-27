@@ -65,6 +65,7 @@ void Player::initMenu()
 
 void Player::update()
 {
+	//m_timer.restart();
 	//for (auto& pawn : m_raftMen)
 	//{
 	//	pawn->update();
@@ -85,12 +86,37 @@ void Player::update()
 
 }
 
+bool Player::isPlaying() const
+{
+	std::cout << m_timer.getElapsedTime().asSeconds() << std::endl;
+	if(!m_playing)
+		return m_timer.getElapsedTime().asSeconds() < 8;
+
+	return true;
+}
+
+void Player::done(RaftMan& pawn)
+{ 
+	m_playing = false; 
+	restartTimer();
+	// Add an explicit reset to zero
+	//sf::Time zeroTime = sf::Time::Zero;
+	//m_timer.restart(zeroTime);
+}
+
+void Player::restartTimer()
+{
+	m_timer.restart();
+}
+
 void Player::draw(sf::RenderWindow* window)
 {
 	for (const auto& x : m_menu)
 		x->draw(window, Vector2f{ sf::Mouse::getPosition(*window).x * 1.f, sf::Mouse::getPosition(*window).y * 1.f });
 
-
+	//for (const auto& weapon : m_weapons)
+	//	if (weapon->firing())
+	//		weapon->draw(window);
 
 	//for (const auto& x : m_raftMen)
 	//	x->draw(window);
@@ -110,13 +136,19 @@ void Player::getWeapon(RaftMan& pawn, enum Menu weapon)
 void Player::play(RenderWindow* window, const sf::Event& event)
 {
 	//needs to manage internal turns
-	m_playing = true;
+	//m_playing = true;
 	m_raftMen[0]->play(window, event);
 }
 
 sf::Vector2f Player::getUserPosition() const
 {
 	return m_raftMen[rand() % m_raftMen.size()]->getPosition();
+}
+
+void Computer::setPlay()
+{
+	Player::setPlay();
+	m_play = false;
 }
 
 void Computer::play(RenderWindow* window, const sf::Event& event)
@@ -132,9 +164,10 @@ void Computer::play(RenderWindow* window, const sf::Event& event)
 
 			setPlay();
 			m_userPosition = getBoard()->getUserPosition();
-			m_turn = (m_turn + 1) % m_raftMen.size();
+			m_turn = 0;
+			//m_turn = (m_turn + 1) % m_raftMen.size();
 			//m_destination = m_raft[rand() % m_raft.size()]->getPosition();
-			m_destination = m_raft[1]->getPosition();
+			m_destination = m_raft[0]->getPosition();
 		}
 		
 
@@ -368,6 +401,8 @@ void Player::addRaft(RaftMan& pawn, const enum Menu& button)
 	for (const auto& raft : m_raft)
 		if (raft.get()->getPosition() == pawn.getRaftBlock()->getPosition())
 			return;
+	
+	m_playing = false;
 
 	if (button == UP_RAFT)
 	{
